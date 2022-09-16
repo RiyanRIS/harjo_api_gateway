@@ -2,6 +2,10 @@ var express = require('express');
 var axios = require('axios');
 var app = express();
 
+app.get('/', function (req, res) {
+  res.status(200).json({status: "success", msg: "Berhasil tersambung"})
+})
+
 app.get('/dokter', function (req, res) {
     let harinya = req.query.hari
     var data = JSON.stringify({
@@ -14,7 +18,8 @@ app.get('/dokter', function (req, res) {
       headers: { 
         'Content-Type': 'application/json'
       },
-      data : data
+      data : data,
+      timeout: 2000
     };
   
     axios(config)
@@ -22,7 +27,7 @@ app.get('/dokter', function (req, res) {
         res.status(200).json(response.data)
     })
     .catch(function (error) {
-        res.status(500)
+        res.status(500).json(null)
     });
 })
 
@@ -38,7 +43,8 @@ app.get('/tarif', function (req, res) {
       headers: { 
         'Content-Type': 'application/json'
       },
-      data : data
+      data : data,
+      timeout: 2000
     };
   
     axios(config)
@@ -46,12 +52,17 @@ app.get('/tarif', function (req, res) {
         res.status(200).json(response.data)
     })
     .catch(function (error) {
-        res.status(500)
+        res.status(500).json(null)
     });
-})
+});
+
+// let apiwahardjo = await axios("https://raw.githubusercontent.com/RiyanRIS/harjo_api_gateway/master/apiwahardjo.json").then((res) => {
+//   return res.data
+// })
 
 const { default: hisokaConnect, useSingleFileAuthState } = require("@adiwajshing/baileys")
 const { state, saveState } = useSingleFileAuthState(`./apiwahardjo.json`)
+// const { state, saveState } = useSingleFileAuthState(apiwahardjo)
 const pino = require('pino')
 const { Boom } = require('@hapi/boom')
 
@@ -90,9 +101,7 @@ async function startHisoka() {
   })
 }
 
-startHisoka();
-
-
+// startHisoka();
 
 var server = app.listen(8081, function () {
    var host = server.address().address
